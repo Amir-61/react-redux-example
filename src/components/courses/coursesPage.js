@@ -21,6 +21,7 @@ class CoursesPage extends React.Component {
   handleOnSubmit = event => {
     event.preventDefault();
     this.props.actions.createCourse(this.state.course);
+    this.setState({ course: { title: "" } });
   };
 
   render() {
@@ -35,10 +36,9 @@ class CoursesPage extends React.Component {
             value={this.state.course.title}
           />
           <input type="submit" value="Save" />
-          {this.props.courses &&
-            this.props.courses.map(course => (
-              <div key={course.title}>{course.title}</div>
-            ))}
+          {this.props.courses.map(course => (
+            <div key={course.title}>{course.title}</div>
+          ))}
         </form>
       </div>
     );
@@ -59,8 +59,17 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   return {
     actions: bindActionCreators(courseActions, dispatch)
+    // If you want to map multiple actions using 'bindActionCreators':
+    // actions: bindActionCreators({ ...SomeActions, ...OtherActions }, dispatch)
+    // OR
+    // actions: bindActionCreators(Object.assign({}, SomeActions, OtherActions), dispatch)
   };
 }
+
+// another way of doing `mapDispatchToProps`:
+// const mapDispatchToProps = {
+//   createCourse: courseActions.createCourse
+// }
 
 export default connect(
   mapStateToProps,
