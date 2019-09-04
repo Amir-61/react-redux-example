@@ -11,6 +11,7 @@ function ManageCoursePage({
   authors,
   loadCourses,
   loadAuthors,
+  courses,
   saveCourse,
   history,
   ...props
@@ -20,15 +21,20 @@ function ManageCoursePage({
 
   useEffect(() => {
     // get courses list
-    loadCourses().catch(error => {
-      alert(`Eorror to load courses: ${error}`);
-    });
+    if (courses.length === 0 ){
+      loadCourses().catch(error => {
+        alert(`Eorror to load courses: ${error}`);
+      });
+    } else {
+      setCourse({...props.course})
+    }
+
 
     // get authors list
     loadAuthors().catch(error => {
       alert(`Eorror to load authors: ${error}`);
     });
-  }, []);
+  }, [props.course]);
   // useEffect is exactly like componentDidMount and only runs once;
   // it is newer semantic; let's use this instead of class componenets;
   // there is no need to use class componenet anymore.
