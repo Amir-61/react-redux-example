@@ -4,10 +4,17 @@ import * as courseActions from "../../redux/actions/courseActions";
 import * as authorActions from "../../redux/actions/authorsActions";
 import PropTypes from "prop-types";
 import CourseForm from "./CourseForm";
-import { course } from "../../../tools/mockData";
+import { newCourse } from "../../../tools/mockData";
 
 // we now use functional componenet with useEffect and useState which make the componenet statefull
-function ManageCoursePage({ authors, loadCourses, loadAuthors, ...props }) {
+function ManageCoursePage({
+  authors,
+  loadCourses,
+  loadAuthors,
+  saveCourse,
+  history,
+  ...props
+}) {
   const [course, setCourse] = useState({ ...props.course });
   const [errors, setError] = useState({});
 
@@ -26,17 +33,50 @@ function ManageCoursePage({ authors, loadCourses, loadAuthors, ...props }) {
   // it is newer semantic; let's use this instead of class componenets;
   // there is no need to use class componenet anymore.
 
-  return <CourseForm course={course} authors={authors} errors={errors}/>;
+  function handleChange(e) {
+    const { name, value } = e.target;
+    setCourse(prevCourse => ({
+      ...prevCourse,
+      [name]: name === "authorId" ? parseInt(value) : value
+    }));
+  }
+
+  function handleSave(e) {
+    e.preventDefault();
+    // course available on state
+    saveCourse(course).then(() => history.push("../courses"));
+  }
+
+  return (
+    <CourseForm
+      course={course}
+      authors={authors}
+      onSave={handleSave}
+      onChange={handleChange}
+      errors={errors}
+    />
+  );
 }
 
 ManageCoursePage.PropTypes = {
   courses: PropTypes.array.isRequired,
-  actions: PropTypes.object.isRequired
+  actions: PropTypes.object.isRequired,
+  saveCourse: PropTypes.func.isRequired
 };
 
-function mapStateToProps(state) {
+export function getCourseBySlugId(courses, slug) {
+  return courses.find(course => course.slug === slug) || null;
+}
+
+function mapStateToProps(state, ownProps) {
+  const slugId = ownProps.match.params.slugId;
+
+  const course =
+    slugId && state.courses.length > 0
+      ? getCourseBySlugId(state.courses, slugId)
+      : newCourse; // this newCourse comes from import from mockData (empty course object)
   return {
-    course: course, // this one comes from import from mockData (empty course object)
+    course: course,
     courses:
       !state.authors || state.authors.length === 0
         ? []
@@ -55,13 +95,9 @@ function mapStateToProps(state) {
 // lets use an object instead of the one we used in cursePage with `bindActionCreators`
 const mapDispatchToProps = {
   loadCourses: courseActions.loadCourses,
-  loadAuthors: authorActions.loadAuthors
+  loadAuthors: authorActions.loadAuthors,
+  saveCourse: courseActions.saveCourse
 };
-
-// another way of doing `mapDispatchToProps`:
-// const mapDispatchToProps = {
-//   createCourse: courseActions.createCourse
-// }
 
 export default connect(
   mapStateToProps,

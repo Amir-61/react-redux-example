@@ -30,32 +30,15 @@ class CoursesPage extends React.Component {
     }
   };
 
-  handleOnChange = event => {
-    const course = { ...this.state.course, title: event.target.value };
-    this.setState({ course });
-  };
-
-  handleOnSubmit = event => {
-    event.preventDefault();
-    this.props.actions.createCourse(this.state.course);
-    this.setState({ course: { title: "" } });
+  handleClick = event => {
+    const { history } = this.props;
+    history.push("./course");
   };
 
   render() {
     return (
       <div className="jumbotron">
-        <h4>Course:</h4>
-        <form onSubmit={this.handleOnSubmit}>
-          <input
-            type="text"
-            onChange={this.handleOnChange}
-            value={this.state.course.title}
-          />
-          <input type="submit" value="Save" />
-        </form>
-
-        <br />
-
+        <button onClick={this.handleClick} className="btn btn-primary add-course">Add Course</button>
         <CourseList courses={this.props.courses} />
       </div>
     );
@@ -64,21 +47,23 @@ class CoursesPage extends React.Component {
 
 CoursesPage.PropTypes = {
   courses: PropTypes.array.isRequired,
-  actions: PropTypes.object.isRequired
+  actions: PropTypes.object.isRequired,
+  hostory: PropTypes.object.isRequired
 };
 
 function mapStateToProps(state) {
   return {
-    courses: !state.authors || state.authors.length === 0
-      ? []
-      : state.courses.map(course => {
-          return {
-            ...course,
-            authorName: state.authors.find(
-              author => author.id === course.authorId
-            ).name
-          };
-        }),
+    courses:
+      !state.authors || state.authors.length === 0
+        ? []
+        : state.courses.map(course => {
+            return {
+              ...course,
+              authorName: state.authors.find(
+                author => author.id === course.authorId
+              ).name
+            };
+          }),
     authors: state.authors
   };
 }

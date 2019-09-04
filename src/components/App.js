@@ -16,8 +16,9 @@ function App() {
         <Route path="/about" component={AboutPage}></Route>
         <Route path="/courses" component={CoursesPage}></Route>
         <Route path="/course:slugId" component={CoursesPage}></Route>
+        <Route path="/course/:slugId" component={ManageCoursePage}></Route>
         <Route path="/course" component={ManageCoursePage}></Route>
-        <Route component={ManageCoursePage}></Route>
+        <Route component={PageNotFound}></Route>
       </Switch>
     </div>
   );
