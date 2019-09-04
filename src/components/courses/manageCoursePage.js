@@ -1,11 +1,16 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import * as courseActions from "../../redux/actions/courseActions";
 import * as authorActions from "../../redux/actions/authorsActions";
 import PropTypes from "prop-types";
+import CourseForm from "./CourseForm";
+import { course } from "../../../tools/mockData";
 
-// we now use functional componenet with useEffect which makes the componenet statefull
-function ManageCoursePage({ loadCourses, loadAuthors }) {
+// we now use functional componenet with useEffect and useState which make the componenet statefull
+function ManageCoursePage({ authors, loadCourses, loadAuthors, ...props }) {
+  const [course, setCourse] = useState({ ...props.course });
+  const [errors, setError] = useState({});
+
   useEffect(() => {
     // get courses list
     loadCourses().catch(error => {
@@ -21,11 +26,7 @@ function ManageCoursePage({ loadCourses, loadAuthors }) {
   // it is newer semantic; let's use this instead of class componenets;
   // there is no need to use class componenet anymore.
 
-  return (
-    <div className="jumbotron">
-      <h4>Manage Course page:</h4>
-    </div>
-  );
+  return <CourseForm course={course} authors={authors} errors={errors}/>;
 }
 
 ManageCoursePage.PropTypes = {
@@ -35,6 +36,7 @@ ManageCoursePage.PropTypes = {
 
 function mapStateToProps(state) {
   return {
+    course: course, // this one comes from import from mockData (empty course object)
     courses:
       !state.authors || state.authors.length === 0
         ? []
