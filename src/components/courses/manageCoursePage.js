@@ -1,15 +1,12 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { connect } from "react-redux";
 import * as courseActions from "../../redux/actions/courseActions";
 import * as authorActions from "../../redux/actions/authorsActions";
 import PropTypes from "prop-types";
 
-// I use class here for now top have it have it statefull;
-// later on I refactor it to use React Hooks. ie. state and effect hooks
-class ManageCoursePage extends React.Component {
-  componentDidMount() {
-    const { loadCourses, loadAuthors } = this.props;
-
+// we now use functional componenet with useEffect which makes the componenet statefull
+function ManageCoursePage({ loadCourses, loadAuthors }) {
+  useEffect(() => {
     // get courses list
     loadCourses().catch(error => {
       alert(`Eorror to load courses: ${error}`);
@@ -19,32 +16,16 @@ class ManageCoursePage extends React.Component {
     loadAuthors().catch(error => {
       alert(`Eorror to load authors: ${error}`);
     });
-  }
+  }, []);
+  // useEffect is exactly like componentDidMount and only runs once;
+  // it is newer semantic; let's use this instead of class componenets;
+  // there is no need to use class componenet anymore.
 
-  state = {
-    course: {
-      title: ""
-    }
-  };
-
-  handleOnChange = event => {
-    const course = { ...this.state.course, title: event.target.value };
-    this.setState({ course });
-  };
-
-  handleOnSubmit = event => {
-    event.preventDefault();
-    this.props.actions.createCourse(this.state.course);
-    this.setState({ course: { title: "" } });
-  };
-
-  render() {
-    return (
-      <div className="jumbotron">
-        <h4>Manage Course page:</h4>
-      </div>
-    );
-  }
+  return (
+    <div className="jumbotron">
+      <h4>Manage Course page:</h4>
+    </div>
+  );
 }
 
 ManageCoursePage.PropTypes = {
